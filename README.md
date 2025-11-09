@@ -1,6 +1,11 @@
 # FOUNDIT - Smart Campus Lost & Found System
 
+[![GitHub Release](https://img.shields.io/badge/Download-APK-brightgreen)](https://github.com/Kushwahaabhay/FOUNDIT/releases)
+[![Version](https://img.shields.io/badge/version-1.0.0-blue)](https://github.com/Kushwahaabhay/FOUNDIT)
+
 **A polished Android app for GCET students to report and find lost items on campus.**
+
+> ⚠️ **Note:** This repository contains template code. You'll need to configure Firebase and Cloudinary with your own credentials. See [SETUP_INSTRUCTIONS.md](SETUP_INSTRUCTIONS.md) for details.
 
 ## 📱 Project Overview
 
