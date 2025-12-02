@@ -249,7 +249,7 @@ service firebase.storage {
 Edit `lib/src/core/constants.dart` and set your college email domain:
 
 ```dart
-static const String allowedEmailDomain = '@galgotiasuniversity.edu.in';
+static const String allowedEmailDomain = '@galgotiacollege.edu.in';
 ```
 
 ### Step 5: Add Admin User
