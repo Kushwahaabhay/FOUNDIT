@@ -5,7 +5,9 @@
 
 **A modern Flutter app for GCET students to report and find lost items on campus.**
 
-> ⚠️ **Note:** This repository contains template code. You'll need to configure Firebase and Cloudinary with your own credentials for full functionality.
+> ⚠️ **Security Notice:** All API keys have been replaced with template values for security. You'll need to configure Firebase and Cloudinary with your own credentials.
+> 
+> 🔒 **Safe for Distribution:** This repository contains no sensitive data and is ready for open-source use.
 
 ## 🎯 Features
 
