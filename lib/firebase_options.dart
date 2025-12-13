@@ -19,29 +19,17 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      throw UnsupportedError(
-        'DefaultFirebaseOptions have not been configured for web - '
-        'you can reconfigure this by running the FlutterFire CLI again.',
-      );
+      return web;
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
         return android;
       case TargetPlatform.iOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for iOS - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return ios;
       case TargetPlatform.macOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for macOS - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return macos;
       case TargetPlatform.windows:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for windows - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return windows;
       case TargetPlatform.linux:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for linux - '
@@ -55,12 +43,57 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'YOUR_API_KEY_HERE',
-    appId: 'YOUR_APP_ID_HERE',
-    messagingSenderId: 'YOUR_SENDER_ID_HERE',
-    projectId: 'YOUR_PROJECT_ID',
-    storageBucket: 'YOUR_PROJECT_ID.firebasestorage.app',
+    apiKey: 'AIzaSyA0s-YHy_y-iouEJspidAjtzGr1KoCzG98',
+    appId: '1:1087756801292:android:80a589d71259314ed6e529',
+    messagingSenderId: '1087756801292',
+    projectId: 'foundit-gcet',
+    storageBucket: 'foundit-gcet.firebasestorage.app',
   );
+
+  // Web configuration - uses same project as Android
+
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: 'AIzaSyDeZDQwKydRCtnmiLdrb9FKNjYpdDyGnto',
+    appId: '1:1087756801292:web:b6bd5c26a04743aed6e529',
+    messagingSenderId: '1087756801292',
+    projectId: 'foundit-gcet',
+    authDomain: 'foundit-gcet.firebaseapp.com',
+    storageBucket: 'foundit-gcet.firebasestorage.app',
+  );
+
+  // TODO: Update these with your actual Firebase web config from Firebase Console
+
+  static const FirebaseOptions macos = FirebaseOptions(
+    apiKey: 'AIzaSyAWxeYyZBKbb9m9N7a3rbMZge70cQvenOo',
+    appId: '1:1087756801292:ios:2f078d4284e6a062d6e529',
+    messagingSenderId: '1087756801292',
+    projectId: 'foundit-gcet',
+    storageBucket: 'foundit-gcet.firebasestorage.app',
+    androidClientId: '1087756801292-65g37bfd8cnrt082uc9l56idd66iargj.apps.googleusercontent.com',
+    iosClientId: '1087756801292-le0rd4ktooeaq7o9hvo1h2kcd8vn8505.apps.googleusercontent.com',
+    iosBundleId: 'com.gcet.foundit.founditApp',
+  );
+
+  static const FirebaseOptions ios = FirebaseOptions(
+    apiKey: 'AIzaSyAWxeYyZBKbb9m9N7a3rbMZge70cQvenOo',
+    appId: '1:1087756801292:ios:2f078d4284e6a062d6e529',
+    messagingSenderId: '1087756801292',
+    projectId: 'foundit-gcet',
+    storageBucket: 'foundit-gcet.firebasestorage.app',
+    androidClientId: '1087756801292-65g37bfd8cnrt082uc9l56idd66iargj.apps.googleusercontent.com',
+    iosClientId: '1087756801292-le0rd4ktooeaq7o9hvo1h2kcd8vn8505.apps.googleusercontent.com',
+    iosBundleId: 'com.gcet.foundit.founditApp',
+  );
+
+  static const FirebaseOptions windows = FirebaseOptions(
+    apiKey: 'AIzaSyDeZDQwKydRCtnmiLdrb9FKNjYpdDyGnto',
+    appId: '1:1087756801292:web:f24f1bd03ff663abd6e529',
+    messagingSenderId: '1087756801292',
+    projectId: 'foundit-gcet',
+    authDomain: 'foundit-gcet.firebaseapp.com',
+    storageBucket: 'foundit-gcet.firebasestorage.app',
+  );
+
 }
 
 /* 

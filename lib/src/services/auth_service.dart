@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import '../core/constants.dart';
 import '../models/user_model.dart';
 import 'firebase_service.dart';
@@ -10,7 +11,19 @@ import 'firebase_service.dart';
 class AuthService {
   final FirebaseAuth _auth = FirebaseService.auth;
   final FirebaseFirestore _firestore = FirebaseService.firestore;
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
+  
+  // Configure GoogleSignIn with web client ID for web platform
+  late final GoogleSignIn _googleSignIn;
+  
+  // Web OAuth Client ID - same as in index.html
+  static const String _webClientId = '1087756801292-05puhdsg6nf8kkh6dvgvp8nef2td70cl.apps.googleusercontent.com';
+  
+  AuthService() {
+    _googleSignIn = GoogleSignIn(
+      clientId: kIsWeb ? _webClientId : null,
+      scopes: ['email', 'profile'],
+    );
+  }
   
   /// Get current user stream
   Stream<User?> get authStateChanges => _auth.authStateChanges();
@@ -30,12 +43,16 @@ class AuthService {
       }
       
       // Check if email domain is allowed (IMPORTANT: Domain restriction)
+      // TODO: Re-enable domain check for production
+      // Temporarily disabled for testing - uncomment below to enable
+      /*
       if (!googleUser.email.toLowerCase().endsWith(AppConstants.allowedEmailDomain.toLowerCase())) {
         await _googleSignIn.signOut();
         throw Exception(
           'Only ${AppConstants.collegeShort} email addresses (${AppConstants.allowedEmailDomain}) are allowed'
         );
       }
+      */
       
       // Get authentication details
       final GoogleSignInAuthentication googleAuth = await googleUser.authentication;

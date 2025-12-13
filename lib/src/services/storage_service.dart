@@ -1,19 +1,18 @@
 import 'dart:io';
-
-import 'package:cloudinary_public/cloudinary_public.dart';
-import 'package:flutter/foundation.dart';
+import 'dart:typed_data';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:image_picker/image_picker.dart';
-
+import 'package:cloudinary_public/cloudinary_public.dart';
 import '../core/constants.dart';
 import '../core/utils.dart';
 
 /// Storage service for handling image uploads to Cloudinary
 /// Cloudinary is used instead of Firebase Storage due to free tier availability
 class StorageService {
-  // TODO: Replace with your Cloudinary credentials
-  // Get these from: https://cloudinary.com/console
-  static const String _cloudName = 'YOUR_CLOUD_NAME'; // e.g., 'dxyz123abc'
-  static const String _uploadPreset = 'foundit_preset'; // Create this in Cloudinary
+  // Cloudinary configuration
+  // Replace YOUR_CLOUD_NAME with your actual cloud name from Cloudinary Dashboard
+  static const String _cloudName = 'dwrhrtnzg'; // Get from https://cloudinary.com/console
+  static const String _uploadPreset = 'foundit_preset'; // Your custom unsigned preset
   
   late final CloudinaryPublic _cloudinary;
   final ImagePicker _imagePicker = ImagePicker();
@@ -23,7 +22,7 @@ class StorageService {
   }
   
   /// Pick image from gallery
-  Future<File?> pickImageFromGallery() async {
+  Future<XFile?> pickImageFromGallery() async {
     try {
       final XFile? image = await _imagePicker.pickImage(
         source: ImageSource.gallery,
@@ -35,8 +34,16 @@ class StorageService {
       if (image == null) return null;
       
       // Check file size
-      final file = File(image.path);
-      final fileSizeInMB = AppUtils.getFileSizeInMB(await file.length());
+      final int fileSize;
+      if (kIsWeb) {
+        final bytes = await image.readAsBytes();
+        fileSize = bytes.length;
+      } else {
+        final file = File(image.path);
+        fileSize = await file.length();
+      }
+      
+      final fileSizeInMB = AppUtils.getFileSizeInMB(fileSize);
       
       if (fileSizeInMB > AppConstants.maxImageSizeMB) {
         throw Exception(
@@ -44,15 +51,20 @@ class StorageService {
         );
       }
       
-      return file;
+      return image;
     } catch (e) {
       throw Exception('Failed to pick image: ${e.toString()}');
     }
   }
   
   /// Pick image from camera
-  Future<File?> pickImageFromCamera() async {
+  Future<XFile?> pickImageFromCamera() async {
     try {
+      // Camera is not available on web, fallback to gallery
+      if (kIsWeb) {
+        return pickImageFromGallery();
+      }
+      
       final XFile? image = await _imagePicker.pickImage(
         source: ImageSource.camera,
         maxWidth: 1920,
@@ -72,7 +84,7 @@ class StorageService {
         );
       }
       
-      return file;
+      return image;
     } catch (e) {
       throw Exception('Failed to capture image: ${e.toString()}');
     }
@@ -80,21 +92,36 @@ class StorageService {
   
   /// Upload image to Cloudinary
   /// Returns download URL
-  Future<String> uploadItemImage(File imageFile, String itemId) async {
+  Future<String> uploadItemImage(XFile imageFile, String itemId) async {
     try {
       // Create unique public ID for the image
       final timestamp = DateTime.now().millisecondsSinceEpoch;
       final publicId = 'foundit/items/${itemId}_$timestamp';
       
-      // Upload to Cloudinary
-      final response = await _cloudinary.uploadFile(
-        CloudinaryFile.fromFile(
+      CloudinaryFile cloudinaryFile;
+      
+      if (kIsWeb) {
+        // For web, use bytes
+        final bytes = await imageFile.readAsBytes();
+        cloudinaryFile = CloudinaryFile.fromBytesData(
+          bytes,
+          identifier: imageFile.name,
+          publicId: publicId,
+          folder: 'foundit/items',
+          resourceType: CloudinaryResourceType.Image,
+        );
+      } else {
+        // For mobile, use file path
+        cloudinaryFile = CloudinaryFile.fromFile(
           imageFile.path,
           publicId: publicId,
           folder: 'foundit/items',
           resourceType: CloudinaryResourceType.Image,
-        ),
-      );
+        );
+      }
+      
+      // Upload to Cloudinary
+      final response = await _cloudinary.uploadFile(cloudinaryFile);
       
       // Return the secure URL
       return response.secureUrl;
@@ -120,11 +147,11 @@ class StorageService {
         // Note: Cloudinary free tier doesn't support deletion via API
         // Images will be automatically managed by Cloudinary
         // For production, you'd need to use Cloudinary Admin API with API key
-        debugPrint('Image deletion not supported in free tier: $publicId');
+        print('Image deletion not supported in free tier: $publicId');
       }
     } catch (e) {
       // Silently fail - not critical for free tier
-      debugPrint('Delete failed: ${e.toString()}');
+      print('Delete failed: ${e.toString()}');
     }
   }
   
@@ -132,6 +159,6 @@ class StorageService {
   Future<void> deleteItemImages(String itemId) async {
     // Not supported in Cloudinary free tier without Admin API
     // Images will be managed by Cloudinary's storage limits
-    debugPrint('Bulk deletion not supported in free tier');
+    print('Bulk deletion not supported in free tier');
   }
 }

@@ -1,6 +1,9 @@
 import 'dart:io';
+import 'dart:typed_data';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../core/constants.dart';
 import '../../core/theme.dart';
 import '../../core/utils.dart';
@@ -26,7 +29,7 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen> {
   String _status = AppConstants.statusLost;
   String? _selectedCategory;
   String? _selectedLocation;
-  File? _imageFile;
+  XFile? _imageFile;
   bool _isLoading = false;
   
   @override
@@ -146,12 +149,34 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen> {
                         children: [
                           ClipRRect(
                             borderRadius: BorderRadius.circular(12),
-                            child: Image.file(
-                              _imageFile!,
-                              height: 200,
-                              width: double.infinity,
-                              fit: BoxFit.cover,
-                            ),
+                            child: kIsWeb
+                                ? FutureBuilder<Uint8List>(
+                                    future: _imageFile!.readAsBytes(),
+                                    builder: (context, snapshot) {
+                                      if (snapshot.hasData) {
+                                        return Image.memory(
+                                          snapshot.data!,
+                                          height: 200,
+                                          width: double.infinity,
+                                          fit: BoxFit.cover,
+                                        );
+                                      }
+                                      return Container(
+                                        height: 200,
+                                        width: double.infinity,
+                                        color: Colors.grey[300],
+                                        child: const Center(
+                                          child: CircularProgressIndicator(),
+                                        ),
+                                      );
+                                    },
+                                  )
+                                : Image.file(
+                                    File(_imageFile!.path),
+                                    height: 200,
+                                    width: double.infinity,
+                                    fit: BoxFit.cover,
+                                  ),
                           ),
                           Positioned(
                             top: 8,

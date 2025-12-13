@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 import '../core/constants.dart';
 import '../models/item_model.dart';
 import '../services/firebase_service.dart';
@@ -35,7 +36,7 @@ class PostService {
     required String category,
     required String status,
     required String location,
-    File? imageFile,
+    XFile? imageFile,
     String? contactPhone,
   }) async {
     try {
@@ -97,7 +98,7 @@ class PostService {
     String? description,
     String? category,
     String? location,
-    File? newImageFile,
+    XFile? newImageFile,
     String? contactPhone,
   }) async {
     try {
@@ -160,12 +161,12 @@ class PostService {
   }
   
   /// Pick image from gallery
-  Future<File?> pickImageFromGallery() async {
+  Future<XFile?> pickImageFromGallery() async {
     return _storageService.pickImageFromGallery();
   }
   
   /// Pick image from camera
-  Future<File?> pickImageFromCamera() async {
+  Future<XFile?> pickImageFromCamera() async {
     return _storageService.pickImageFromCamera();
   }
 }
