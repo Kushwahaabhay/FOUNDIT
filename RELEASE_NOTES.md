@@ -2,7 +2,7 @@
 
 ---
 
-## 🎉 v1.0.2 - December 16, 2024
+## 🎉 v1.0.3 - December 16, 2025
 
 ### ✨ New Features
 
@@ -34,7 +34,7 @@
 
 ---
 
-## 📱 v1.0.1 - December 13, 2024
+## 📱 v1.0.1 AND v1.0.2 - December 13, 2025
 
 ### ✨ New Features
 
@@ -57,7 +57,7 @@
 
 ---
 
-## 🚀 v1.0.0 - November 9, 2024
+## 🚀 v1.0.0 - November 9, 2025
 
 ### Initial Release
 
@@ -85,8 +85,8 @@
 
 | Version | APK | Web |
 |---------|-----|-----|
-| v1.0.2 | [Download](https://github.com/Kushwahaabhay/FOUNDIT/releases) | [Live](https://foundit-gcet.web.app) |
-| v1.0.1 | [Download](https://github.com/Kushwahaabhay/FOUNDIT/releases) | - |
+| v1.0.3 | [Download](https://github.com/Kushwahaabhay/FOUNDIT/releases) | [Live](https://foundit-gcet.web.app) |
+| v1.0.1+2 | [Download](https://github.com/Kushwahaabhay/FOUNDIT/releases) | - |
 | v1.0.0 | [Download](https://github.com/Kushwahaabhay/FOUNDIT/releases) | - |
 
 ---
