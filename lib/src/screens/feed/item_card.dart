@@ -126,6 +126,29 @@ class ItemCard extends StatelessWidget {
                     ),
                   ],
                 ),
+                
+                // Posted by
+                if (item.postedByName != null && item.postedByName!.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.person_outline,
+                          size: 16,
+                          color: AppTheme.primaryBlue,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          'Posted by ${item.postedByName!.split(' ').first}',
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                color: AppTheme.primaryBlue,
+                                fontWeight: FontWeight.w500,
+                              ),
+                        ),
+                      ],
+                    ),
+                  ),
               ],
             ),
           ),

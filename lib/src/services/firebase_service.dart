@@ -27,6 +27,9 @@ class FirebaseService {
   /// Get current user email
   static String? get currentUserEmail => auth.currentUser?.email;
   
+  /// Get current user display name
+  static String? get currentUserName => auth.currentUser?.displayName;
+  
   /// Check if user is signed in
   static bool get isSignedIn => auth.currentUser != null;
   

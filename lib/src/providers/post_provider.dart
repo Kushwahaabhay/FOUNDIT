@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
@@ -46,6 +45,19 @@ class PostService {
       final userEmail = FirebaseService.currentUserEmail;
       if (userEmail == null) throw Exception('User email not found');
       
+      // Get user name from Firebase Auth or Firestore
+      String? userName = FirebaseService.currentUserName;
+      if (userName == null || userName.isEmpty) {
+        // Try to get from Firestore user document
+        final userDoc = await _firestore
+            .collection(AppConstants.usersCollection)
+            .doc(userId)
+            .get();
+        if (userDoc.exists) {
+          userName = userDoc.data()?['name'];
+        }
+      }
+      
       // Generate item ID
       final itemId = _firestore.collection(AppConstants.itemsCollection).doc().id;
       
@@ -65,6 +77,7 @@ class PostService {
         location: location,
         imageUrl: imageUrl,
         postedByUid: userId,
+        postedByName: userName,
         contactPhone: contactPhone,
         contactEmail: userEmail,
         createdAt: DateTime.now(),
@@ -168,5 +181,33 @@ class PostService {
   /// Pick image from camera
   Future<XFile?> pickImageFromCamera() async {
     return _storageService.pickImageFromCamera();
+  }
+  
+  /// Update all user's posts to add their name (migration helper)
+  Future<void> updateUserPostsWithName() async {
+    try {
+      final userId = FirebaseService.currentUserId;
+      final userName = FirebaseService.currentUserName;
+      
+      if (userId == null || userName == null) return;
+      
+      // Get all posts by current user that don't have postedByName
+      final posts = await _firestore
+          .collection(AppConstants.itemsCollection)
+          .where('postedByUid', isEqualTo: userId)
+          .get();
+      
+      // Update each post with the user's name
+      final batch = _firestore.batch();
+      for (final doc in posts.docs) {
+        final data = doc.data();
+        if (data['postedByName'] == null || data['postedByName'] == '') {
+          batch.update(doc.reference, {'postedByName': userName});
+        }
+      }
+      await batch.commit();
+    } catch (e) {
+      // Silently fail - this is just a migration helper
+    }
   }
 }

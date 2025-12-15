@@ -5,6 +5,7 @@ import '../../core/theme.dart';
 import '../../core/constants.dart';
 import '../../providers/feed_provider.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/post_provider.dart';
 import '../../widgets/skeleton_feed.dart';
 import 'item_card.dart';
 import '../post/create_post_screen.dart';
@@ -28,6 +29,11 @@ class _FeedScreenState extends ConsumerState<FeedScreen> with SingleTickerProvid
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
     _tabController.addListener(_onTabChanged);
+    
+    // Update existing posts with user's name (one-time migration)
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(postProvider).updateUserPostsWithName();
+    });
   }
   
   @override
@@ -166,9 +172,10 @@ class _FeedScreenState extends ConsumerState<FeedScreen> with SingleTickerProvid
                     onRefresh: () async {
                       ref.invalidate(itemsStreamProvider);
                     },
-                    child: ListView.builder(
+                    child: ListView.separated(
                       padding: const EdgeInsets.all(16),
                       itemCount: items.length,
+                      separatorBuilder: (context, index) => const SizedBox(height: 12),
                       itemBuilder: (context, index) {
                         return ItemCard(item: items[index]);
                       },

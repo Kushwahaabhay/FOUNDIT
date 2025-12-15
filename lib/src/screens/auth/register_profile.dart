@@ -6,6 +6,7 @@ import '../../core/validators.dart';
 import '../../providers/auth_provider.dart';
 import '../../widgets/glass_card.dart';
 import '../../widgets/custom_buttons.dart';
+import '../feed/feed_screen.dart';
 
 /// Profile completion screen after Google Sign-In
 class RegisterProfileScreen extends ConsumerStatefulWidget {
@@ -46,7 +47,11 @@ class _RegisterProfileScreenState extends ConsumerState<RegisterProfileScreen> {
       if (!mounted) return;
       AppUtils.showSnackBar(context, 'Profile completed successfully!');
       
-      // AuthWrapper will handle navigation to FeedScreen
+      // Navigate to FeedScreen and clear navigation stack
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => const FeedScreen()),
+        (route) => false,
+      );
     } catch (e) {
       if (!mounted) return;
       AppUtils.showSnackBar(

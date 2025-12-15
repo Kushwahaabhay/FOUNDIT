@@ -1,78 +1,115 @@
-# FOUNDIT v2.0.0 Release Notes
-
-## 🎉 Major Update - December 13, 2025
-
-### ✅ What's New
-
-#### 🌐 Web Platform Support
-- Full web compatibility with Flutter Web
-- Cross-platform image picker (web + mobile)
-- Web-optimized authentication flow
-- Responsive design for all screen sizes
-
-#### 🔧 Technical Improvements
-- **Firebase CLI Integration**: Automated configuration with `flutterfire configure`
-- **Cloudinary Integration**: Switched from Firebase Storage to Cloudinary for free image hosting
-- **Firestore Indexes**: Automated index deployment for optimal query performance
-- **Web Image Handling**: Fixed web-specific image picker issues with proper XFile handling
-
-#### 🧹 Project Cleanup
-- Removed 12+ unnecessary documentation files
-- Updated .gitignore to protect sensitive configuration files
-- Created clean, focused README with essential information
-- Added MIT License for open-source compliance
-
-#### 🔐 Security Enhancements
-- Secured API keys and configuration files
-- Updated .gitignore to exclude sensitive data
-- Template-based configuration for easy setup
-
-### 📱 New APK Release
-- **File**: `FOUNDIT-v2.0.0.apk` (51MB)
-- **Platform**: Android (API 21+)
-- **Features**: Full functionality with web support
-- **Download**: Available in GitHub Releases
-
-### 🛠️ Fixed Issues
-- ✅ Web image picker "Unsupported operation: _Namespace" error
-- ✅ Firestore index errors on feed and profile pages
-- ✅ Cloudinary 401 authentication errors
-- ✅ Firebase configuration template issues
-- ✅ Cross-platform compatibility issues
-
-### 📋 Configuration Files Secured
-The following sensitive files are now properly gitignored:
-- `lib/firebase_options.dart`
-- `android/app/google-services.json`
-- `firebase.json`
-- `firestore.indexes.json`
-
-### 🚀 Deployment Ready
-- Clean project structure
-- Automated Firebase setup with CLI
-- Production-ready APK built and uploaded
-- MIT License added for open-source distribution
-
-### 📊 Project Stats
-- **Total Files Cleaned**: 12 documentation files removed
-- **APK Size**: 51MB (optimized)
-- **Platforms**: Android, iOS, Web
-- **Build Time**: ~15 minutes (optimized)
-
-### 🔄 Migration Guide
-For existing users:
-1. Pull latest changes: `git pull origin main`
-2. Run: `flutter clean && flutter pub get`
-3. Configure Firebase: `flutterfire configure --project=your-project-id`
-4. Update Cloudinary cloud name in storage service
-5. Deploy indexes: `firebase deploy --only firestore:indexes`
-
-### 🎯 Next Steps
-- Test image upload functionality with your Cloudinary account
-- Configure Firebase Authentication with your project
-- Deploy to production environment
-- Submit to Google Play Store (optional)
+# FOUNDIT Release Notes
 
 ---
 
-**Team FOUNDIT - GCET Data Science Semester III**
+## 🎉 v1.0.2 - December 16, 2024
+
+### ✨ New Features
+
+- **Poster Name Display**: Item cards now show "Posted by [FirstName]"
+- **Custom App Icon**: New FOUNDIT branding replaces default Flutter icon
+- **Firebase Hosting**: Web app live at https://foundit-gcet.web.app
+- **Environment Variables**: All sensitive keys moved to `.env` file
+
+### 🔧 Improvements
+
+- Improved spacing between item cards (12px gap)
+- Better sign-out flow - redirects to login screen
+- Removed unnecessary profile completion screen
+- Enhanced Firestore security rules with input validation
+
+### 🐛 Bug Fixes
+
+- Fixed Google Sign-In OAuth client ID for web
+- Fixed WhatsApp button not working on Android
+- Fixed user name not appearing on posts
+- Fixed Firestore permission denied errors
+
+### 🔐 Security
+
+- Enabled college email domain restriction
+- Added server-side validation in Firestore rules
+- Environment variables for API keys
+- Updated `.gitignore` to protect secrets
+
+---
+
+## 📱 v1.0.1 - December 13, 2024
+
+### ✨ New Features
+
+- **Web Platform Support**: Full Flutter Web compatibility
+- **Cloudinary Integration**: Free image hosting (replaced Firebase Storage)
+- **Cross-platform Image Picker**: Works on Android, iOS, and Web
+
+### 🔧 Improvements
+
+- Firebase CLI integration for automated setup
+- Automated Firestore index deployment
+- Responsive design for all screen sizes
+- Project cleanup - removed unnecessary files
+
+### 🐛 Bug Fixes
+
+- Fixed web image picker errors
+- Fixed Firestore index errors
+- Fixed Cloudinary 401 authentication
+
+---
+
+## 🚀 v1.0.0 - November 9, 2024
+
+### Initial Release
+
+- **Core Features**
+  - Google Sign-In with college email restriction
+  - Post lost/found items with photos
+  - Real-time feed with filters
+  - Search by category, location, status
+  - Direct contact via WhatsApp/Phone/Email
+
+- **Admin Features**
+  - Dashboard with statistics
+  - Post moderation (delete/resolve)
+  - Activity logging
+
+- **Design**
+  - Glassmorphism UI theme
+  - Dark mode support
+  - Skeleton loaders
+  - Hero animations
+
+---
+
+## 📥 Download
+
+| Version | APK | Web |
+|---------|-----|-----|
+| v1.0.2 | [Download](https://github.com/Kushwahaabhay/FOUNDIT/releases) | [Live](https://foundit-gcet.web.app) |
+| v1.0.1 | [Download](https://github.com/Kushwahaabhay/FOUNDIT/releases) | - |
+| v1.0.0 | [Download](https://github.com/Kushwahaabhay/FOUNDIT/releases) | - |
+
+---
+
+## 🔮 Roadmap
+
+### Planned Features
+
+| Feature | Status | Target |
+|---------|--------|--------|
+| Push Notifications | 🔄 Planned | v1.1.0 |
+| In-App Chat | 🔄 Planned | v1.2.0 |
+| Smart Matching (AI) | 🔄 Research | v2.0.0 |
+| Map Integration | 🔄 Planned | v1.3.0 |
+
+---
+
+## 📞 Support
+
+For issues or feature requests:
+- **GitHub Issues**: [Create Issue](https://github.com/Kushwahaabhay/FOUNDIT/issues)
+- **Email**: kushwahaabhay099@gmail.com
+
+---
+
+**Made with ❤️ by GCET Data Science Team**

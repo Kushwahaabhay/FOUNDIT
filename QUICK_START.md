@@ -1,102 +1,131 @@
 # FOUNDIT - Quick Start Guide
 
-## ⚡ Get Running in 10 Minutes
+Get the app running in under 10 minutes!
 
-### Step 1: Install Dependencies (2 min)
+---
+
+## ⚡ Express Setup
+
+### 1️⃣ Clone & Install (2 min)
+
 ```bash
+git clone https://github.com/Kushwahaabhay/FOUNDIT.git
+cd FOUNDIT
 flutter pub get
 ```
 
-### Step 2: Download Fonts (3 min)
-1. Go to https://fonts.google.com/specimen/Poppins
-2. Click "Download family"
-3. Extract ZIP
-4. Copy these files to `assets/fonts/`:
-   - `Poppins-Regular.ttf`
-   - `Poppins-Medium.ttf`
-   - `Poppins-SemiBold.ttf`
-   - `Poppins-Bold.ttf`
+### 2️⃣ Create Environment File (1 min)
 
-**OR** Skip fonts and use system default:
-- Remove `fontFamily: 'Poppins'` from `lib/src/core/theme.dart`
-
-### Step 3: Setup Firebase & Cloudinary (10 min)
-
-#### Firebase (for Auth & Database):
-1. Create Firebase project at https://console.firebase.google.com/
-2. Add Android app: `com.gcet.foundit.foundit_app`
-3. Download `google-services.json` → `android/app/`
-4. Enable Authentication (Google)
-5. Create Firestore Database (any region)
-6. Add Firestore security rules
-7. Get config values and fill `lib/firebase_options.dart`
-
-#### Cloudinary (for Images):
-1. Sign up at https://cloudinary.com/users/register/free
-2. Get your **Cloud name** from dashboard
-3. Create upload preset: `foundit_preset` (unsigned)
-4. Update `lib/src/services/storage_service.dart` with cloud name
-
-**See CLOUDINARY_SETUP.md for detailed steps**
-
-### Step 4: Update Email Domain
-Edit `lib/src/core/constants.dart`:
-```dart
-static const String allowedEmailDomain = '@galgotiasuniversity.edu.in';
-```
-
-### Step 5: Run App
 ```bash
-flutter run
+cp .env.example .env
 ```
 
-## 🎯 First Time Setup Checklist
+### 3️⃣ Firebase Setup (5 min)
 
-- [ ] Dependencies installed (`flutter pub get`)
-- [ ] Fonts downloaded (or removed from theme)
-- [ ] Firebase project created
-- [ ] `google-services.json` in `android/app/`
-- [ ] Email domain updated in constants.dart
-- [ ] App runs successfully
-- [ ] Can sign in with college email
-- [ ] Can create a test post
-- [ ] Admin user added in Firestore
+1. Go to [Firebase Console](https://console.firebase.google.com/)
+2. Create new project → `foundit-yourname`
+3. Add Android app:
+   - Package: `com.gcet.foundit.foundit_app`
+   - Download `google-services.json` → `android/app/`
+4. Add Web app → Copy config to `.env`
+5. Enable Authentication → Google Sign-In
+6. Create Firestore Database
 
-## 🔥 Firebase Quick Setup
+### 4️⃣ Cloudinary Setup (2 min)
 
-### Enable Authentication
-1. Firebase Console → Authentication
-2. Sign-in method → Google → Enable
-3. Add support email → Save
+1. Go to [Cloudinary](https://cloudinary.com/) → Sign up
+2. Copy Cloud Name from dashboard
+3. Settings → Upload → Add preset:
+   - Name: `foundit_preset`
+   - Mode: **Unsigned**
+4. Update `.env`:
+   ```
+   CLOUDINARY_CLOUD_NAME=your_cloud_name
+   CLOUDINARY_UPLOAD_PRESET=foundit_preset
+   ```
 
-### Create Firestore
-1. Firebase Console → Firestore Database
-2. Create database → Test mode
-3. Location: asia-south1 (Mumbai)
-4. Enable
+### 5️⃣ Run! 🚀
 
-### Create Storage
-1. Firebase Console → Storage
-2. Get Started → Test mode
-3. Done
+```bash
+# Android
+flutter run
 
-### Add Security Rules
-Copy from `README.md` → Firestore Rules and Storage Rules
+# Web
+flutter run -d chrome --web-port=5000
+```
 
-## 👤 Add Admin User
+---
 
-After first sign-in:
-1. Firebase Console → Firestore
-2. `users` collection → Your user document
-3. Add field: `isAdmin` = `true` (boolean)
-4. Save
+## ✅ Setup Checklist
 
-## 🧪 Test the App
+| Step | Status |
+|------|--------|
+| Clone repository | ⬜ |
+| Run `flutter pub get` | ⬜ |
+| Create `.env` file | ⬜ |
+| Firebase project created | ⬜ |
+| `google-services.json` added | ⬜ |
+| Google Auth enabled | ⬜ |
+| Firestore created | ⬜ |
+| Cloudinary account created | ⬜ |
+| Upload preset created | ⬜ |
+| `.env` values filled | ⬜ |
+| App runs successfully | ⬜ |
 
-### Test Authentication
-1. Sign in with college email
-2. Complete profile
-3. Should see feed screen
+---
+
+## 👤 Make Yourself Admin
+
+After signing in:
+
+1. Go to [Firebase Console](https://console.firebase.google.com/)
+2. Firestore Database → `users` collection
+3. Click on your user document
+4. Add field:
+   - Field: `isAdmin`
+   - Type: `boolean`
+   - Value: `true`
+5. Save
+
+Now you'll see the Admin Dashboard in the app!
+
+---
+
+## 🧪 Quick Test
+
+| Test | Expected Result |
+|------|-----------------|
+| Open app | Splash screen → Login |
+| Sign in | Google popup → Feed screen |
+| Create post | Fill form → Post appears in feed |
+| View details | Tap card → Details with contact buttons |
+| Admin dashboard | (If admin) See stats and all posts |
+
+---
+
+## 🆘 Common Issues
+
+| Problem | Solution |
+|---------|----------|
+| `google-services.json` not found | Download from Firebase Console |
+| Google Sign-In fails | Add SHA-1: `cd android && ./gradlew signingReport` |
+| Image upload fails | Check Cloudinary preset is "Unsigned" |
+| Permission denied | Run `firebase deploy --only firestore:rules` |
+
+See [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for more.
+
+---
+
+## 📚 More Documentation
+
+- [Full Setup Guide](SETUP_INSTRUCTIONS.md)
+- [Cloudinary Setup](CLOUDINARY_SETUP.md)
+- [Deployment Guide](DEPLOYMENT_GUIDE.md)
+- [Troubleshooting](TROUBLESHOOTING.md)
+
+---
+
+**Ready? Let's go! 🚀**
 
 ### Test Posting
 1. Tap FAB (+ button)

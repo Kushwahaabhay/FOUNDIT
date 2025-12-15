@@ -1,83 +1,140 @@
 # Cloudinary Setup Guide
 
+Step-by-step guide to configure Cloudinary for image uploads.
+
+---
+
 ## 🎯 Why Cloudinary?
 
-Firebase Storage requires billing even in US regions. Cloudinary offers:
-- ✅ **FREE** - 25GB storage, 25GB bandwidth/month
-- ✅ **No payment method** required
-- ✅ **Fast** - Global CDN
-- ✅ **Easy** - Simple API
+| Feature | Firebase Storage | Cloudinary |
+|---------|------------------|------------|
+| Free tier | Requires billing | ✅ Generous free tier |
+| Storage | 5GB | 25GB |
+| Bandwidth | 1GB/day | 25GB/month |
+| Payment required | Yes | ❌ No |
+| CDN | Yes | ✅ Global CDN |
+| Image optimization | Manual | ✅ Automatic |
 
 ---
 
 ## 🚀 Quick Setup (5 minutes)
 
-### Step 1: Create Cloudinary Account
+### Step 1: Create Account
 
-1. Go to: https://cloudinary.com/users/register/free
-2. Fill in:
-   - **Email:** Your email
-   - **Password:** Create password
-   - **Cloud name:** Choose a unique name (e.g., `foundit-gcet`)
+1. Go to: [Cloudinary Sign Up](https://cloudinary.com/users/register/free)
+2. Fill in your details
 3. Click **"Create Account"**
 4. Verify your email
 
-### Step 2: Get Your Credentials
+### Step 2: Get Cloud Name
 
-1. After login, you'll see the **Dashboard**
-2. Look for **"Account Details"** section
-3. You'll see:
-   - **Cloud name:** (e.g., `dxyz123abc`)
-   - **API Key:** (not needed for upload)
-   - **API Secret:** (not needed for upload)
+1. Login to [Cloudinary Console](https://console.cloudinary.com/)
+2. On Dashboard, find **"Account Details"**
+3. Copy your **Cloud Name** (e.g., `dwrhrtnzg`)
 
-4. **Copy your Cloud name** - you'll need this!
+### Step 3: Create Upload Preset ⚠️ CRITICAL
 
-### Step 3: Create Upload Preset ⚠️ CRITICAL STEP
+1. Go to **Settings** (gear icon) → **Upload**
+2. Scroll to **"Upload presets"**
+3. Click **"Add upload preset"**
+4. Configure:
+   | Setting | Value |
+   |---------|-------|
+   | Preset name | `foundit_preset` |
+   | Signing Mode | **Unsigned** ⚠️ |
+   | Folder | `foundit/items` |
+5. Click **Save**
+6. **Wait 1-2 minutes** for changes to apply
 
-1. In Cloudinary Dashboard, click **Settings** (gear icon)
-2. Click **Upload** tab
-3. Scroll to **"Upload presets"**
-4. Click **"Add upload preset"**
-5. Fill in:
-   - **Preset name:** `foundit_preset` (exactly this!)
-   - **Signing Mode:** Select **"Unsigned"** ⚠️⚠️⚠️ MUST BE UNSIGNED!
-   - **Folder:** `foundit/items`
-6. Click **"Save"**
-7. **Wait 1 minute** for changes to apply
+> ⚠️ **IMPORTANT:** Signing Mode MUST be "Unsigned" or you'll get 401 errors!
 
-**IMPORTANT:** If Signing Mode is "Signed", you'll get 401 error!
+### Step 4: Update Environment File
 
-### Step 4: Update Your Code
+Add to your `.env`:
 
-Open `lib/src/services/storage_service.dart` and update:
-
-```dart
-static const String _cloudName = 'YOUR_CLOUD_NAME'; // Replace with your cloud name
-static const String _uploadPreset = 'foundit_preset'; // Keep as is
+```env
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_UPLOAD_PRESET=foundit_preset
 ```
 
-**Example:**
-```dart
-static const String _cloudName = 'dxyz123abc'; // Your actual cloud name
-static const String _uploadPreset = 'foundit_preset';
-```
+### Step 5: Test Upload
 
-### Step 5: Install Dependencies
+1. Run the app
+2. Create a new post
+3. Add an image
+4. Submit
 
-```bash
-flutter pub get
-```
-
-### Step 6: Test It!
-
-```bash
-flutter run
-```
-
-Try uploading an image - it should work!
+If successful, image appears in your Cloudinary Media Library!
 
 ---
+
+## 🔧 Troubleshooting
+
+### 401 Error - Bad Request
+
+**Cause:** Upload preset is "Signed" instead of "Unsigned"
+
+**Fix:**
+1. Go to Settings → Upload → Upload presets
+2. Click on `foundit_preset`
+3. Change Signing Mode to **Unsigned**
+4. Save and wait 1 minute
+
+### Image Not Uploading
+
+**Check:**
+- [ ] Cloud name is correct in `.env`
+- [ ] Preset name is exactly `foundit_preset`
+- [ ] Preset is Unsigned
+- [ ] Internet connection is stable
+
+### Images Not Displaying
+
+**Cause:** Invalid cloud name or image URL
+
+**Fix:** Verify cloud name matches your Cloudinary dashboard
+
+---
+
+## 📊 Cloudinary Limits (Free Tier)
+
+| Resource | Limit |
+|----------|-------|
+| Storage | 25 GB |
+| Monthly bandwidth | 25 GB |
+| Transformations | 25,000/month |
+| Max file size | 10 MB |
+
+For a college app, these limits are more than sufficient!
+
+---
+
+## 🔒 Security Notes
+
+- **Unsigned presets** are designed for client-side uploads
+- Images are public by default (anyone with URL can view)
+- For sensitive images, consider using signed uploads
+- Cloudinary automatically scans for inappropriate content
+
+---
+
+## 📚 Resources
+
+- [Cloudinary Documentation](https://cloudinary.com/documentation)
+- [cloudinary_public Flutter Package](https://pub.dev/packages/cloudinary_public)
+- [Image Transformation Guide](https://cloudinary.com/documentation/image_transformations)
+
+---
+
+## ✅ Setup Checklist
+
+- [ ] Cloudinary account created
+- [ ] Email verified
+- [ ] Cloud name copied
+- [ ] Upload preset `foundit_preset` created
+- [ ] Preset is **Unsigned**
+- [ ] `.env` updated with credentials
+- [ ] Test upload successful
 
 ## ✅ Verification
 

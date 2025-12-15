@@ -1,103 +1,239 @@
-# Troubleshooting Guide
+# FOUNDIT - Troubleshooting Guide
 
-## 🔧 Common Issues & Solutions
+Solutions to common issues you may encounter.
 
-### Issue 1: "The query requires an index"
+---
 
-**When:** After login, feed screen shows error
+## 🔑 Authentication Issues
+
+### Google Sign-In Error Code 10
+
+**Symptoms:** Sign-in fails with error code 10 on Android
+
+**Cause:** SHA-1 fingerprint not added to Firebase
+
+**Solution:**
+1. Get SHA-1:
+   ```bash
+   cd android
+   ./gradlew signingReport
+   ```
+2. Copy SHA-1 from `Variant: debug`
+3. Go to Firebase Console → Project Settings → Your apps → Android
+4. Click "Add fingerprint" → Paste SHA-1
+5. Download new `google-services.json` → Replace in `android/app/`
+6. Restart app:
+   ```bash
+   flutter clean && flutter run
+   ```
+
+---
+
+### "Sign-in cancelled by user"
+
+**Cause:** User closed the Google sign-in popup
+
+**Solution:** Try signing in again and complete the flow
+
+---
+
+### "Only GCET emails allowed"
+
+**Cause:** Trying to sign in with non-college email
+
+**Solution:** Use your `@galgotiacollege.edu` email address
+
+---
+
+## 📸 Image Upload Issues
+
+### "401 Bad Response" - Upload Fails
+
+**Cause:** Cloudinary upload preset not configured correctly
+
+**Solution:**
+1. Go to [Cloudinary Console](https://console.cloudinary.com/)
+2. Settings → Upload → Upload presets
+3. Check preset `foundit_preset`:
+   - **Signing Mode: Unsigned** ⚠️ (MUST be Unsigned)
+   - Folder: `foundit/items` (optional)
+4. If preset doesn't exist, create it with above settings
+5. Wait 1-2 minutes, then try again
+
+---
+
+### Image Not Appearing After Upload
+
+**Cause:** Network delay or caching
+
+**Solution:** Pull-to-refresh on the feed
+
+---
+
+## 🔥 Firebase Issues
+
+### "The query requires an index"
 
 **Solution:**
 1. Click the link in the error message
-2. Firebase Console opens
+2. Firebase Console opens automatically
 3. Click "Create Index"
-4. Wait 2-5 minutes
+4. Wait 2-5 minutes for index to build
 5. Restart app
 
 ---
 
-### Issue 2: "401 bad response" - Image Upload Fails
+### "Permission Denied" (Firestore)
 
-**When:** Trying to upload image in create post
-
-**Cause:** Cloudinary upload preset not configured or not "Unsigned"
+**Cause:** Security rules not deployed
 
 **Solution:**
-1. Go to https://cloudinary.com/console
-2. Login
-3. Settings → Upload tab
-4. Find "Upload presets"
-5. Create new preset:
-   - Name: `foundit_preset`
-   - Signing Mode: **Unsigned** ⚠️
-   - Folder: `foundit/items`
-6. Save
-7. Try upload again
-
-**Verify:**
-- Preset name is exactly: `foundit_preset`
-- Signing mode is: **Unsigned** (not Signed!)
-- Wait 1 minute after creating
+```bash
+firebase deploy --only firestore:rules
+```
 
 ---
 
-### Issue 3: Google Sign-In Not Working
+### "Firebase App not initialized"
+
+**Cause:** Missing Firebase configuration
 
 **Solution:**
-1. Check SHA-1 is added to Firebase Console
-2. Download new google-services.json
-3. Replace in android/app/
-4. Run: `flutter clean && flutter run`
+1. Check `.env` file has all Firebase values
+2. Check `google-services.json` exists in `android/app/`
+3. Run:
+   ```bash
+   flutter clean
+   flutter pub get
+   flutter run
+   ```
 
 ---
 
-### Issue 4: "Email domain not allowed"
+## 🌐 Web Issues
 
-**Solution:**
-1. Open `lib/src/core/constants.dart`
-2. Update line 12 with your actual college email domain
-3. Save and restart app
+### Google Sign-In popup blocked
+
+**Cause:** Browser blocking popups
+
+**Solution:** Allow popups for localhost or the hosted URL
 
 ---
 
-### Issue 5: App Won't Build
+### CORS Error
+
+**Cause:** OAuth origins not configured
+
+**Solution:**
+1. Go to [Google Cloud Console](https://console.cloud.google.com/apis/credentials)
+2. Edit Web OAuth client
+3. Add to Authorized JavaScript origins:
+   - `http://localhost:5000`
+   - `https://your-project.web.app`
+
+---
+
+## 📱 Android Issues
+
+### App Won't Build
 
 **Solution:**
 ```bash
 flutter clean
 flutter pub get
-flutter run -d V2334
+cd android && ./gradlew clean && cd ..
+flutter run
 ```
 
 ---
 
-## 📞 Quick Checks
+### WhatsApp/Phone Buttons Not Working
 
-### Cloudinary Setup:
-- [ ] Account created
-- [ ] Cloud name: `dwrhrtnzg`
-- [ ] Upload preset: `foundit_preset`
-- [ ] Preset is **Unsigned**
-- [ ] Folder: `foundit/items`
+**Cause:** Missing queries in AndroidManifest.xml
 
-### Firebase Setup:
-- [ ] Google Authentication enabled
-- [ ] Firestore database created
-- [ ] Firestore index created
-- [ ] SHA-1 added to Android app
-
-### App Configuration:
-- [ ] google-services.json in android/app/
-- [ ] firebase_options.dart filled
-- [ ] Email domain updated in constants.dart
-- [ ] Cloudinary cloud name in storage_service.dart
+**Solution:** Ensure `android/app/src/main/AndroidManifest.xml` has:
+```xml
+<queries>
+    <intent>
+        <action android:name="android.intent.action.VIEW"/>
+        <data android:scheme="https"/>
+    </intent>
+    <package android:name="com.whatsapp"/>
+</queries>
+```
 
 ---
 
-## 🎯 Most Common Issue
+## ⚙️ Environment Issues
 
-**Cloudinary 401 Error** = Upload preset not "Unsigned"
+### ".env file not found"
 
-Make sure:
+**Solution:**
+1. Create `.env` file in project root
+2. Copy contents from `.env.example`
+3. Fill in your actual values
+
+---
+
+### "dotenv not loading"
+
+**Cause:** `.env` not listed in assets
+
+**Solution:** Check `pubspec.yaml` has:
+```yaml
+flutter:
+  assets:
+    - .env
+```
+
+---
+
+## 🔄 Quick Fixes
+
+| Problem | Quick Fix |
+|---------|-----------|
+| Any build error | `flutter clean && flutter pub get` |
+| Signing error | Re-download `google-services.json` |
+| Web not working | Check OAuth domains |
+| Image upload fails | Check Cloudinary preset is "Unsigned" |
+| Permission denied | `firebase deploy --only firestore:rules` |
+
+---
+
+## ✅ Verification Checklist
+
+### Firebase
+- [ ] Project created
+- [ ] Android app added with correct package name
+- [ ] SHA-1 fingerprint added
+- [ ] `google-services.json` in `android/app/`
+- [ ] Google Authentication enabled
+- [ ] Firestore database created
+- [ ] Security rules deployed
+
+### Cloudinary
+- [ ] Account created
+- [ ] Cloud name added to `.env`
+- [ ] Upload preset `foundit_preset` exists
+- [ ] Preset signing mode is **Unsigned**
+
+### Environment
+- [ ] `.env` file exists
+- [ ] All values filled in
+- [ ] `.env` listed in `pubspec.yaml` assets
+
+---
+
+## 📞 Still Having Issues?
+
+1. Check the error message carefully
+2. Search in [GitHub Issues](https://github.com/Kushwahaabhay/FOUNDIT/issues)
+3. Create a new issue with:
+   - Error message/screenshot
+   - Steps to reproduce
+   - Flutter version (`flutter --version`)
+
+**Email:** kushwahaabhay099@gmail.com
 1. Preset exists
 2. Name is exactly: `foundit_preset`
 3. Signing Mode is: **Unsigned**

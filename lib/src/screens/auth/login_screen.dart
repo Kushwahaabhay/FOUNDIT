@@ -6,7 +6,7 @@ import '../../core/utils.dart';
 import '../../providers/auth_provider.dart';
 import '../../widgets/glass_card.dart';
 import '../../widgets/custom_buttons.dart';
-import 'register_profile.dart';
+import '../feed/feed_screen.dart';
 
 /// Login screen with Google Sign-In (college email only)
 class LoginScreen extends ConsumerStatefulWidget {
@@ -24,22 +24,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     
     try {
       final authService = ref.read(authServiceProvider);
-      final userCredential = await authService.signInWithGoogle();
+      await authService.signInWithGoogle();
       
-      if (!mounted) return;
-      
-      // Check if profile is complete
-      final profile = await authService.getUserProfile(userCredential.user!.uid);
-      
-      if (!mounted) return;
-      
-      if (profile == null || profile.rollNo.isEmpty) {
-        // Navigate to profile completion
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const RegisterProfileScreen()),
+      // Navigate to FeedScreen directly after successful sign-in
+      if (mounted) {
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (_) => const FeedScreen()),
+          (route) => false,
         );
       }
-      // Otherwise, AuthWrapper will handle navigation to FeedScreen
     } catch (e) {
       if (!mounted) return;
       AppUtils.showSnackBar(

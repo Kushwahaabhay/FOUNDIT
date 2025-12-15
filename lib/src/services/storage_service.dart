@@ -1,18 +1,17 @@
-import 'dart:io';
-import 'dart:typed_data';
-import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:image_picker/image_picker.dart';
 import 'package:cloudinary_public/cloudinary_public.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:image_picker/image_picker.dart';
+
 import '../core/constants.dart';
 import '../core/utils.dart';
 
 /// Storage service for handling image uploads to Cloudinary
 /// Cloudinary is used instead of Firebase Storage due to free tier availability
 class StorageService {
-  // Cloudinary configuration
-  // Replace YOUR_CLOUD_NAME with your actual cloud name from Cloudinary Dashboard
-  static const String _cloudName = 'dwrhrtnzg'; // Get from https://cloudinary.com/console
-  static const String _uploadPreset = 'foundit_preset'; // Your custom unsigned preset
+  // Cloudinary credentials from environment
+  static String get _cloudName => dotenv.env['CLOUDINARY_CLOUD_NAME'] ?? '';
+  static String get _uploadPreset => dotenv.env['CLOUDINARY_UPLOAD_PRESET'] ?? '';
   
   late final CloudinaryPublic _cloudinary;
   final ImagePicker _imagePicker = ImagePicker();
@@ -34,16 +33,8 @@ class StorageService {
       if (image == null) return null;
       
       // Check file size
-      final int fileSize;
-      if (kIsWeb) {
-        final bytes = await image.readAsBytes();
-        fileSize = bytes.length;
-      } else {
-        final file = File(image.path);
-        fileSize = await file.length();
-      }
-      
-      final fileSizeInMB = AppUtils.getFileSizeInMB(fileSize);
+      final bytes = await image.readAsBytes();
+      final fileSizeInMB = AppUtils.getFileSizeInMB(bytes.length);
       
       if (fileSizeInMB > AppConstants.maxImageSizeMB) {
         throw Exception(
@@ -60,11 +51,6 @@ class StorageService {
   /// Pick image from camera
   Future<XFile?> pickImageFromCamera() async {
     try {
-      // Camera is not available on web, fallback to gallery
-      if (kIsWeb) {
-        return pickImageFromGallery();
-      }
-      
       final XFile? image = await _imagePicker.pickImage(
         source: ImageSource.camera,
         maxWidth: 1920,
@@ -75,8 +61,8 @@ class StorageService {
       if (image == null) return null;
       
       // Check file size
-      final file = File(image.path);
-      final fileSizeInMB = AppUtils.getFileSizeInMB(await file.length());
+      final bytes = await image.readAsBytes();
+      final fileSizeInMB = AppUtils.getFileSizeInMB(bytes.length);
       
       if (fileSizeInMB > AppConstants.maxImageSizeMB) {
         throw Exception(
@@ -98,30 +84,19 @@ class StorageService {
       final timestamp = DateTime.now().millisecondsSinceEpoch;
       final publicId = 'foundit/items/${itemId}_$timestamp';
       
-      CloudinaryFile cloudinaryFile;
+      // Read bytes for cross-platform compatibility (works on web and mobile)
+      final bytes = await imageFile.readAsBytes();
       
-      if (kIsWeb) {
-        // For web, use bytes
-        final bytes = await imageFile.readAsBytes();
-        cloudinaryFile = CloudinaryFile.fromBytesData(
+      // Upload to Cloudinary using bytes for web compatibility
+      final response = await _cloudinary.uploadFile(
+        CloudinaryFile.fromBytesData(
           bytes,
+          publicId: publicId,
+          folder: 'foundit/items',
+          resourceType: CloudinaryResourceType.Image,
           identifier: imageFile.name,
-          publicId: publicId,
-          folder: 'foundit/items',
-          resourceType: CloudinaryResourceType.Image,
-        );
-      } else {
-        // For mobile, use file path
-        cloudinaryFile = CloudinaryFile.fromFile(
-          imageFile.path,
-          publicId: publicId,
-          folder: 'foundit/items',
-          resourceType: CloudinaryResourceType.Image,
-        );
-      }
-      
-      // Upload to Cloudinary
-      final response = await _cloudinary.uploadFile(cloudinaryFile);
+        ),
+      );
       
       // Return the secure URL
       return response.secureUrl;
@@ -147,11 +122,11 @@ class StorageService {
         // Note: Cloudinary free tier doesn't support deletion via API
         // Images will be automatically managed by Cloudinary
         // For production, you'd need to use Cloudinary Admin API with API key
-        print('Image deletion not supported in free tier: $publicId');
+        debugPrint('Image deletion not supported in free tier: $publicId');
       }
     } catch (e) {
       // Silently fail - not critical for free tier
-      print('Delete failed: ${e.toString()}');
+      debugPrint('Delete failed: ${e.toString()}');
     }
   }
   
@@ -159,6 +134,6 @@ class StorageService {
   Future<void> deleteItemImages(String itemId) async {
     // Not supported in Cloudinary free tier without Admin API
     // Images will be managed by Cloudinary's storage limits
-    print('Bulk deletion not supported in free tier');
+    debugPrint('Bulk deletion not supported in free tier');
   }
 }

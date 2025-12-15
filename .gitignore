@@ -10,6 +10,11 @@
 .svn/
 migrate_working_dir/
 
+# Environment variables - NEVER commit these!
+.env
+.env.local
+.env.*.local
+
 # IntelliJ related
 *.iml
 *.ipr
@@ -55,11 +60,19 @@ firestore.rules
 .env
 .env.local
 .env.*.local
+.env.production
+.env.development
 
-# Sensitive configuration files
+# Sensitive configuration files (should be generated locally)
 lib/firebase_options.dart
 android/app/google-services.json
 ios/Runner/GoogleService-Info.plist
+web/firebase-config.js
+web/index.html
+
+# Local configuration files
+config.local.dart
+secrets.local.dart
 
 # API Keys and secrets
 **/api_keys.dart

@@ -1,23 +1,72 @@
 # FOUNDIT Deployment Guide
 
-## Building for Production
+Complete guide for deploying FOUNDIT to Web, Android, and iOS.
 
-### 1. Prepare Release Build
+---
 
-#### Update Version
-Edit `pubspec.yaml`:
-```yaml
-version: 1.0.0+1  # version+buildNumber
-```
+## 🌐 Web Deployment (Firebase Hosting)
 
-#### Create Keystore
+### Quick Deploy
+
 ```bash
-keytool -genkey -v -keystore foundit-release-key.jks -keyalg RSA -keysize 2048 -validity 10000 -alias foundit
+# Build web app
+flutter build web --release
+
+# Deploy to Firebase
+firebase deploy --only hosting
 ```
 
-**Save the passwords securely!**
+Your app will be live at: `https://your-project.web.app`
 
-#### Configure Signing
+### Detailed Steps
+
+1. **Install Firebase CLI**
+   ```bash
+   npm install -g firebase-tools
+   firebase login
+   ```
+
+2. **Initialize Hosting**
+   ```bash
+   firebase init hosting
+   ```
+   - Select your project
+   - Public directory: `build/web`
+   - Single-page app: Yes
+   - Don't overwrite index.html
+
+3. **Build & Deploy**
+   ```bash
+   flutter build web --release
+   firebase deploy --only hosting
+   ```
+
+### Configure OAuth for Production
+
+Add these domains in [Google Cloud Console](https://console.cloud.google.com/apis/credentials):
+
+**Authorized JavaScript origins:**
+- `https://your-project.web.app`
+- `https://your-project.firebaseapp.com`
+
+**Authorized redirect URIs:**
+- `https://your-project.web.app`
+- `https://your-project.firebaseapp.com`
+
+---
+
+## 📱 Android Deployment
+
+### 1. Create Release Keystore
+
+```bash
+keytool -genkey -v -keystore foundit-release-key.jks -keyalias foundit -keyalg RSA -keysize 2048 -validity 10000
+```
+
+⚠️ **Save the passwords securely!**
+
+### 2. Configure Signing
+
 Create `android/key.properties`:
 ```properties
 storePassword=YOUR_STORE_PASSWORD
@@ -26,35 +75,40 @@ keyAlias=foundit
 storeFile=../foundit-release-key.jks
 ```
 
-Add to `android/app/build.gradle` (before `android` block):
-```gradle
-def keystoreProperties = new Properties()
-def keystorePropertiesFile = rootProject.file('key.properties')
+### 3. Update build.gradle
+
+Edit `android/app/build.gradle.kts`:
+
+```kotlin
+// Add at top
+val keystoreProperties = Properties()
+val keystorePropertiesFile = rootProject.file("key.properties")
 if (keystorePropertiesFile.exists()) {
-    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+    keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+}
+
+android {
+    // Add signing config
+    signingConfigs {
+        create("release") {
+            keyAlias = keystoreProperties["keyAlias"] as String
+            keyPassword = keystoreProperties["keyPassword"] as String
+            storeFile = file(keystoreProperties["storeFile"] as String)
+            storePassword = keystoreProperties["storePassword"] as String
+        }
+    }
+    
+    buildTypes {
+        release {
+            signingConfig = signingConfigs.getByName("release")
+            isMinifyEnabled = true
+            isShrinkResources = true
+        }
+    }
 }
 ```
 
-Inside `android` block:
-```gradle
-signingConfigs {
-    release {
-        keyAlias keystoreProperties['keyAlias']
-        keyPassword keystoreProperties['keyPassword']
-        storeFile keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
-        storePassword keystoreProperties['storePassword']
-    }
-}
-buildTypes {
-    release {
-        signingConfig signingConfigs.release
-        minifyEnabled true
-        shrinkResources true
-    }
-}
-```
-
-### 2. Build Release APK
+### 4. Build Release APK
 
 ```bash
 flutter build apk --release
@@ -62,7 +116,7 @@ flutter build apk --release
 
 Output: `build/app/outputs/flutter-apk/app-release.apk`
 
-### 3. Build App Bundle (for Play Store)
+### 5. Build App Bundle (Play Store)
 
 ```bash
 flutter build appbundle --release
@@ -70,34 +124,97 @@ flutter build appbundle --release
 
 Output: `build/app/outputs/bundle/release/app-release.aab`
 
-## Google Play Store Submission
+---
 
-### 1. Create Play Console Account
-- Go to [Google Play Console](https://play.google.com/console)
-- Pay one-time $25 registration fee
-- Complete account setup
+## 🍎 iOS Deployment
 
-### 2. Create App
-1. Click "Create app"
-2. Fill in details:
-   - **App name:** FOUNDIT
-   - **Default language:** English (United States)
-   - **App or game:** App
-   - **Free or paid:** Free
+### Requirements
+- Mac with Xcode installed
+- Apple Developer Account ($99/year)
 
-### 3. Store Listing
+### Build
 
-#### App Details
-- **Short description:** (80 chars)
-  ```
-  Smart campus lost & found system for GCET students. Find your lost items fast!
-  ```
+```bash
+flutter build ios --release
+```
 
-- **Full description:** (4000 chars)
-  ```
-  FOUNDIT is a secure, campus-exclusive lost and found application designed specifically for students of Galgotias College of Engineering & Technology (GCET).
+Then open Xcode:
+```bash
+open ios/Runner.xcworkspace
+```
 
-  🔍 KEY FEATURES:
+### Archive & Upload
+1. Product → Archive
+2. Distribute App → App Store Connect
+3. Upload
+
+---
+
+## 📦 Release Checklist
+
+### Before Release
+
+- [ ] Update version in `pubspec.yaml`
+- [ ] Test on multiple devices
+- [ ] Check all features work
+- [ ] Review Firestore security rules
+- [ ] Update `.env` with production values
+- [ ] Remove debug prints
+
+### Version Naming
+
+```yaml
+version: 1.0.2+3
+#        ^   ^ ^
+#        |   | Build number (internal)
+#        |   Patch version
+#        Major.Minor
+```
+
+---
+
+## 🔒 Security Checklist
+
+- [ ] Domain restriction enabled
+- [ ] Firestore rules deployed
+- [ ] `.env` not committed to Git
+- [ ] API keys restricted in Google Cloud
+- [ ] SHA-1 added for release keystore
+
+---
+
+## 📊 Post-Deployment Monitoring
+
+### Firebase Console
+- Check Authentication users
+- Monitor Firestore reads/writes
+- Review security rule evaluations
+
+### Google Play Console (Android)
+- Monitor crash reports (Android Vitals)
+- Check ANR rate
+- Review user ratings
+
+### Firebase Hosting
+- View traffic analytics
+- Check response times
+
+---
+
+## 🚀 Live URLs
+
+| Platform | URL |
+|----------|-----|
+| **Web** | https://foundit-gcet.web.app |
+| **Firebase Console** | https://console.firebase.google.com/project/foundit-gcet |
+
+---
+
+## 📞 Support
+
+For deployment issues, contact:
+- **Email:** kushwahaabhay099@gmail.com
+- **GitHub:** [Create Issue](https://github.com/Kushwahaabhay/FOUNDIT/issues)
   • Post lost or found items with photos
   • Search campus-wide for your belongings
   • Contact item owners via WhatsApp, call, or email

@@ -1,7 +1,7 @@
 name: foundit_app
 description: "FOUNDIT - A Smart Campus Lost & Found System for GCET"
 publish_to: 'none'
-version: 1.0.0+1
+version: 1.0.3+4
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -47,11 +47,22 @@ dependencies:
   
   # Icons
   cupertino_icons: ^1.0.8
+  flutter_dotenv: ^6.0.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^4.0.0
+  flutter_launcher_icons: ^0.14.3
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  web:
+    generate: true
+  image_path: "assets/icons/app_icon.png"
+  adaptive_icon_background: "#FFFFFF"
+  adaptive_icon_foreground: "assets/icons/app_icon.png"
 
 flutter:
   uses-material-design: true
@@ -59,3 +70,4 @@ flutter:
   assets:
     - assets/images/
     - assets/icons/
+    - .env

@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../core/constants.dart';
 import '../models/user_model.dart';
 import 'firebase_service.dart';
@@ -15,8 +16,8 @@ class AuthService {
   // Configure GoogleSignIn with web client ID for web platform
   late final GoogleSignIn _googleSignIn;
   
-  // Web OAuth Client ID - same as in index.html
-  static const String _webClientId = '1087756801292-05puhdsg6nf8kkh6dvgvp8nef2td70cl.apps.googleusercontent.com';
+  // Web OAuth Client ID - from environment variables
+  static String get _webClientId => dotenv.env['GOOGLE_WEB_CLIENT_ID'] ?? '';
   
   AuthService() {
     _googleSignIn = GoogleSignIn(
@@ -43,16 +44,12 @@ class AuthService {
       }
       
       // Check if email domain is allowed (IMPORTANT: Domain restriction)
-      // TODO: Re-enable domain check for production
-      // Temporarily disabled for testing - uncomment below to enable
-      /*
       if (!googleUser.email.toLowerCase().endsWith(AppConstants.allowedEmailDomain.toLowerCase())) {
         await _googleSignIn.signOut();
         throw Exception(
           'Only ${AppConstants.collegeShort} email addresses (${AppConstants.allowedEmailDomain}) are allowed'
         );
       }
-      */
       
       // Get authentication details
       final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
@@ -67,7 +64,8 @@ class AuthService {
       final userCredential = await _auth.signInWithCredential(credential);
       
       // Check if user document exists, create if not
-      await _ensureUserDocument(userCredential.user!);
+      // Pass Google account display name since Firebase Auth might not have it on web
+      await _ensureUserDocument(userCredential.user!, googleUser.displayName);
       
       return userCredential;
     } on FirebaseAuthException catch (e) {
@@ -138,6 +136,32 @@ class AuthService {
     }
   }
   
+  /// Update user profile (phone and roll number)
+  Future<void> updateProfile({
+    String? phone,
+    String? rollNo,
+    String? name,
+  }) async {
+    try {
+      final user = currentUser;
+      if (user == null) throw Exception('No user signed in');
+      
+      final updates = <String, dynamic>{};
+      if (phone != null) updates['phone'] = phone;
+      if (rollNo != null) updates['rollNo'] = rollNo;
+      if (name != null) updates['name'] = name;
+      
+      if (updates.isEmpty) return;
+      
+      await _firestore
+          .collection(AppConstants.usersCollection)
+          .doc(user.uid)
+          .update(updates);
+    } catch (e) {
+      throw Exception('Failed to update profile: ${e.toString()}');
+    }
+  }
+  
   /// Sign out
   Future<void> signOut() async {
     try {
@@ -151,7 +175,7 @@ class AuthService {
   }
   
   /// Ensure user document exists in Firestore
-  Future<void> _ensureUserDocument(User user) async {
+  Future<void> _ensureUserDocument(User user, String? googleDisplayName) async {
     final doc = await _firestore
         .collection(AppConstants.usersCollection)
         .doc(user.uid)
@@ -159,9 +183,11 @@ class AuthService {
     
     if (!doc.exists) {
       // Create basic user document (profile completion required)
+      // Use Google display name as it's more reliable than Firebase user displayName on web
+      final userName = googleDisplayName ?? user.displayName ?? '';
       final userModel = UserModel(
         uid: user.uid,
-        name: user.displayName ?? '',
+        name: userName,
         rollNo: '', // To be filled during profile completion
         email: user.email!,
         phone: user.phoneNumber,
@@ -173,6 +199,18 @@ class AuthService {
           .collection(AppConstants.usersCollection)
           .doc(user.uid)
           .set(userModel.toJson());
+    } else {
+      // If user exists but name is empty, update it
+      final data = doc.data();
+      if (data != null && (data['name'] == null || data['name'] == '')) {
+        final userName = googleDisplayName ?? user.displayName ?? '';
+        if (userName.isNotEmpty) {
+          await _firestore
+              .collection(AppConstants.usersCollection)
+              .doc(user.uid)
+              .update({'name': userName});
+        }
+      }
     }
   }
   

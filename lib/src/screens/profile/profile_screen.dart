@@ -6,6 +6,7 @@ import '../../providers/auth_provider.dart';
 import '../../providers/feed_provider.dart';
 import '../../widgets/glass_card.dart';
 import '../feed/item_card.dart';
+import '../auth/login_screen.dart';
 
 /// User profile screen
 class ProfileScreen extends ConsumerWidget {
@@ -20,6 +21,10 @@ class ProfileScreen extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('Profile'),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.edit),
+            onPressed: () => _showEditProfileDialog(context, ref, profileAsync.value),
+          ),
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: () => _signOut(context, ref),
@@ -138,7 +143,10 @@ class ProfileScreen extends ConsumerWidget {
                     }
                     
                     return Column(
-                      children: posts.map((post) => ItemCard(item: post)).toList(),
+                      children: posts.map((post) => Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: ItemCard(item: post),
+                      )).toList(),
                     );
                   },
                   loading: () => const Center(child: CircularProgressIndicator()),
@@ -180,10 +188,92 @@ class ProfileScreen extends ConsumerWidget {
     try {
       final authService = ref.read(authServiceProvider);
       await authService.signOut();
+      
+      // Navigate to login and clear entire navigation stack
+      if (context.mounted) {
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (_) => const LoginScreen()),
+          (route) => false,
+        );
+      }
     } catch (e) {
       if (context.mounted) {
         AppUtils.showSnackBar(context, e.toString(), isError: true);
       }
     }
+  }
+  
+  Future<void> _showEditProfileDialog(BuildContext context, WidgetRef ref, dynamic profile) async {
+    if (profile == null) return;
+    
+    final rollNoController = TextEditingController(text: profile.rollNo);
+    final phoneController = TextEditingController(text: profile.phone ?? '');
+    
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Edit Profile'),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: rollNoController,
+                decoration: const InputDecoration(
+                  labelText: 'Roll Number',
+                  prefixIcon: Icon(Icons.badge),
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: phoneController,
+                keyboardType: TextInputType.phone,
+                decoration: const InputDecoration(
+                  labelText: 'Phone Number',
+                  prefixIcon: Icon(Icons.phone),
+                  border: OutlineInputBorder(),
+                  hintText: '10-digit mobile number',
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
+    
+    if (result == true) {
+      try {
+        final authService = ref.read(authServiceProvider);
+        await authService.updateProfile(
+          rollNo: rollNoController.text.trim(),
+          phone: phoneController.text.trim(),
+        );
+        
+        // Refresh the profile
+        ref.invalidate(currentUserProfileProvider);
+        
+        if (context.mounted) {
+          AppUtils.showSnackBar(context, 'Profile updated successfully');
+        }
+      } catch (e) {
+        if (context.mounted) {
+          AppUtils.showSnackBar(context, e.toString(), isError: true);
+        }
+      }
+    }
+    
+    rollNoController.dispose();
+    phoneController.dispose();
   }
 }

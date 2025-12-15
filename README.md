@@ -1,34 +1,93 @@
 # FOUNDIT - Smart Campus Lost & Found System
 
-[![GitHub Release](https://img.shields.io/badge/Download-APK-brightgreen)](https://github.com/Kushwahaabhay/FOUNDIT/releases)
-[![Version](https://img.shields.io/badge/version-2.0.0-blue)](https://github.com/Kushwahaabhay/FOUNDIT)
+<p align="center">
+  <img src="assets/icons/app_icon.png" alt="FOUNDIT Logo" width="120" height="120">
+</p>
 
-**A modern Flutter app for GCET students to report and find lost items on campus.**
+<p align="center">
+  <a href="https://foundit-gcet.web.app"><img src="https://img.shields.io/badge/🌐_Live_Demo-foundit--gcet.web.app-blue?style=for-the-badge" alt="Live Demo"></a>
+  <a href="https://github.com/Kushwahaabhay/FOUNDIT/releases"><img src="https://img.shields.io/badge/📱_Download-APK-brightgreen?style=for-the-badge" alt="Download APK"></a>
+</p>
 
-> ⚠️ **Security Notice:** All API keys have been replaced with template values for security. You'll need to configure Firebase and Cloudinary with your own credentials.
-> 
-> 🔒 **Safe for Distribution:** This repository contains no sensitive data and is ready for open-source use.
+<p align="center">
+  <img src="https://img.shields.io/badge/Flutter-3.0+-02569B?logo=flutter" alt="Flutter">
+  <img src="https://img.shields.io/badge/Firebase-FFCA28?logo=firebase&logoColor=black" alt="Firebase">
+  <img src="https://img.shields.io/badge/Dart-0175C2?logo=dart" alt="Dart">
+  <img src="https://img.shields.io/badge/License-MIT-green" alt="License">
+</p>
 
-## 🎯 Features
+---
 
-- **Smart Feed System**: Browse lost and found items with real-time updates
-- **Google Authentication**: Secure login with college email domain restriction  
-- **Image Upload**: High-quality image support with Cloudinary integration
-- **Advanced Search & Filter**: Find items by category, location, and status
-- **Admin Dashboard**: Comprehensive management tools for administrators
-- **Glassmorphism UI**: Modern, elegant design with smooth animations
-- **Cross-Platform**: Works on Android, iOS, and Web
+## 📋 Overview
 
-## 📱 Download
+**FOUNDIT** is a modern, cross-platform mobile and web application designed to help GCET college students and staff report, track, and recover lost items on campus. Built with Flutter and Firebase, it provides a seamless experience for connecting people who have lost items with those who have found them.
 
-**Latest Release**: [Download APK](https://github.com/Kushwahaabhay/FOUNDIT/releases/latest)
+### 🎯 Problem Statement
 
-## 🚀 Quick Setup
+Every day, students lose valuable items on campus - ID cards, wallets, keys, electronics, and more. Traditional methods like notice boards and WhatsApp groups are inefficient and disorganized. FOUNDIT solves this by providing a centralized, searchable platform with real-time notifications.
+
+---
+
+## ✨ Features
+
+### For Students
+| Feature | Description |
+|---------|-------------|
+| 🔐 **Secure Login** | Google Sign-In with college email domain restriction |
+| 📝 **Post Items** | Report lost or found items with photos and details |
+| 🔍 **Smart Search** | Filter by category, location, and status |
+| 📍 **Location Tags** | Predefined campus locations for easy identification |
+| 📞 **Direct Contact** | WhatsApp and phone integration to contact finders |
+| 👤 **Profile Management** | Edit roll number and phone number |
+
+### For Administrators
+| Feature | Description |
+|---------|-------------|
+| 📊 **Dashboard** | View statistics and manage all posts |
+| 🗑️ **Moderation** | Delete inappropriate or resolved posts |
+| ✅ **Status Updates** | Mark items as resolved |
+| 📋 **Activity Logs** | Track admin actions |
+
+### Technical Features
+- 🎨 **Modern UI** - Glassmorphism design with smooth animations
+- 🌙 **Dark Mode** - Full dark theme support
+- 📱 **Cross-Platform** - Android, iOS, and Web
+- 🔄 **Real-time Updates** - Instant feed refresh with Firestore
+- 📸 **Image Optimization** - Compressed uploads via Cloudinary
+- 🔒 **Secure** - Firebase security rules with input validation
+
+---
+
+## 📱 Screenshots
+
+| Feed Screen | Post Item | Profile |
+|:-----------:|:---------:|:-------:|
+| Browse all lost/found items | Report with photo | View your posts |
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer | Technology |
+|-------|------------|
+| **Frontend** | Flutter 3.0+, Dart |
+| **State Management** | Riverpod |
+| **Backend** | Firebase (Firestore, Auth) |
+| **Image Storage** | Cloudinary |
+| **Hosting** | Firebase Hosting |
+| **Authentication** | Google Sign-In |
+
+---
+
+## 🚀 Getting Started
 
 ### Prerequisites
-- Flutter SDK (3.0+)
-- Firebase account
-- Cloudinary account (free tier)
+
+- Flutter SDK 3.0 or higher
+- Dart SDK
+- Firebase CLI
+- A Firebase project
+- A Cloudinary account (free tier)
 
 ### Installation
 
@@ -43,91 +102,161 @@
    flutter pub get
    ```
 
-3. **Configure Firebase**
-   - Create a Firebase project at https://console.firebase.google.com
-   - Enable Authentication (Google Sign-In) and Firestore Database
-   - Run: `flutterfire configure --project=your-project-id`
-   - This will generate `lib/firebase_options.dart` automatically
+3. **Create environment file**
+   ```bash
+   cp .env.example .env
+   ```
+   Then edit `.env` with your credentials (see [Environment Setup](#environment-setup))
 
-4. **Configure Cloudinary**
-   - Create account at https://cloudinary.com
-   - Create an unsigned upload preset named `foundit_preset`
-   - Update your cloud name in `lib/src/services/storage_service.dart`:
-   ```dart
-   static const String _cloudName = 'your-cloud-name';
+4. **Configure Firebase**
+   ```bash
+   flutterfire configure --project=your-project-id
    ```
 
-5. **Deploy Firestore Indexes**
+5. **Deploy Firestore rules and indexes**
    ```bash
-   firebase deploy --only firestore:indexes
+   firebase deploy --only firestore
    ```
 
 6. **Run the app**
    ```bash
+   # For Android
    flutter run
+   
+   # For Web
+   flutter run -d chrome --web-port=5000
+   
+   # For iOS
+   flutter run -d ios
    ```
 
-## 🏗️ Tech Stack
+### Environment Setup
 
-- **Frontend**: Flutter (Dart)
-- **Backend**: Firebase (Firestore, Authentication)  
-- **Storage**: Cloudinary (Image hosting)
-- **State Management**: Riverpod
-- **UI**: Material Design 3 with Glassmorphism
+Create a `.env` file in the project root with:
 
-## 📖 Usage
+```env
+# Cloudinary
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_UPLOAD_PRESET=foundit_preset
 
-### For Students
-1. **Sign in** with your college Google account
-2. **Report Lost Item**: Create a post with details and photo
-3. **Report Found Item**: Help others by posting found items
-4. **Browse & Search**: Find your items using filters
-5. **Contact**: Reach out to item owners directly
+# Google OAuth
+GOOGLE_WEB_CLIENT_ID=your_client_id.apps.googleusercontent.com
 
-### For Administrators  
-1. **Monitor Activity**: View all posts and users
-2. **Manage Content**: Review and moderate posts
-3. **User Management**: Handle accounts and permissions
+# Firebase Web
+FIREBASE_WEB_API_KEY=your_web_api_key
+FIREBASE_WEB_APP_ID=your_web_app_id
+FIREBASE_PROJECT_ID=your_project_id
+FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+FIREBASE_STORAGE_BUCKET=your_project.firebasestorage.app
+FIREBASE_MESSAGING_SENDER_ID=your_sender_id
 
-## 🔧 Configuration Files
+# Firebase Android
+FIREBASE_ANDROID_API_KEY=your_android_api_key
+FIREBASE_ANDROID_APP_ID=your_android_app_id
+```
 
-The following files contain sensitive information and are not included in the repository:
+---
 
-- `lib/firebase_options.dart` - Firebase configuration
-- `android/app/google-services.json` - Android Firebase config
-- `firebase.json` - Firebase project settings
-- `firestore.indexes.json` - Database indexes
+## 📁 Project Structure
 
-Use the setup instructions above to generate these files for your own Firebase project.
+```
+lib/
+├── main.dart                 # App entry point
+├── firebase_options.dart     # Firebase configuration
+└── src/
+    ├── core/                 # Constants, theme, utils, validators
+    ├── models/               # Data models (User, Item)
+    ├── providers/            # Riverpod providers
+    ├── screens/              # UI screens
+    │   ├── auth/             # Login, Register
+    │   ├── feed/             # Main feed, Item card, Details
+    │   ├── post/             # Create post
+    │   ├── profile/          # User profile
+    │   └── admin/            # Admin dashboard
+    ├── services/             # Firebase, Auth, Storage services
+    └── widgets/              # Reusable widgets
+```
+
+---
+
+## 🔐 Security
+
+- ✅ Email domain restriction (college emails only)
+- ✅ Firestore security rules with owner-based access
+- ✅ Input validation on client and server
+- ✅ Admin actions logging
+- ✅ Environment variables for sensitive data
+- ✅ No hardcoded credentials in source code
+
+---
+
+## 🌐 Live Demo
+
+**Web App:** [https://foundit-gcet.web.app](https://foundit-gcet.web.app)
+
+**Note:** Sign-in is restricted to `@galgotiacollege.edu` email addresses.
+
+---
+
+## 📥 Download
+
+**Android APK:** [Download Latest Release](https://github.com/Kushwahaabhay/FOUNDIT/releases/latest)
+
+---
 
 ## 👥 Team
 
-**College:** Galgotias College of Engineering & Technology (GCET)  
-**Department:** Data Science, Semester III  
+**Institution:** Galgotias College of Engineering & Technology (GCET)  
+**Program:** B.Tech Data Science, Semester III  
+**Subject:** Mini Project  
 **Mentor:** Dr. Anju Chandna
 
-**Team Members:**
-- Kushwaha Abhaykumar Dharmendra — 2400971630037
-- Hemant Kumar — 2400971630028
-- Ayush Singhal — 2400971630016
-- Gurav Sahani — 2400971630025
+| Name | Roll Number | Role |
+|------|-------------|------|
+| Kushwaha Abhaykumar Dharmendra | 2400971630037 | Team Lead
+| Hemant Kumar | 2400971630028 
+| Ayush Singhal | 2400971630016
+| Gurav Sahani | 2400971630025
+---
+
+## 📄 Documentation
+
+- [Quick Start Guide](QUICK_START.md)
+- [Setup Instructions](SETUP_INSTRUCTIONS.md)
+- [Deployment Guide](DEPLOYMENT_GUIDE.md)
+- [Cloudinary Setup](CLOUDINARY_SETUP.md)
+- [Troubleshooting](TROUBLESHOOTING.md)
+- [Changelog](CHANGELOG.md)
+- [Release Notes](RELEASE_NOTES.md)
+
+---
 
 ## 🤝 Contributing
 
+Contributions are welcome! Please feel free to submit a Pull Request.
+
 1. Fork the repository
-2. Create a feature branch: `git checkout -b feature-name`
-3. Commit changes: `git commit -m 'Add feature'`
-4. Push to branch: `git push origin feature-name`
-5. Submit a pull request
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+---
 
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 📞 Support
+---
 
-For support, email kushwahaabhay099@gmail.com or create an issue on GitHub.
+## 📞 Contact
+
+**Email:** kushwahaabhay099@gmail.com  
+**GitHub:** [@Kushwahaabhay](https://github.com/Kushwahaabhay)
 
 ---
 
-**Made with ❤️ for GCET College Community**
+<p align="center">
+  <b>Made with ❤️ for GCET College Community</b><br>
+  <i>December 2025</i>
+</p>
