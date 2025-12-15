@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
-## [1.0.2] - 2024-12-16
+## [1.0.3] - 2025-12-16
 
 ### Added
 - ✅ **Poster Name Display** - Item cards now show "Posted by [FirstName]"
@@ -34,7 +34,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
-## [1.0.1] - 2024-12-10
+## [1.0.2] - 2025-12-10
 
 ### Added
 - ✅ Cloudinary integration for image uploads (replaced Firebase Storage)
@@ -50,9 +50,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
-## [1.0.0] - 2024-11-09
+## [1.0.1] - 2025-11-09
 
-### Week 1-2: Project Setup & Foundation
+### Day 1-2: Project Setup & Foundation
 - ✅ Initialized Flutter project with null-safety
 - ✅ Setup Firebase (Auth, Firestore)
 - ✅ Implemented glassmorphism theme with light/dark mode
@@ -60,7 +60,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - ✅ Setup Riverpod state management
 - ✅ Designed app architecture and folder structure
 
-### Week 3-5: Core Features
+### Day 3-5: Core Features
 - ✅ Implemented Google Sign-In with college email restriction
 - ✅ Created profile completion flow
 - ✅ Built infinite scroll feed with pagination
@@ -70,7 +70,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - ✅ Implemented item details screen with hero animations
 - ✅ Added contact buttons (WhatsApp, Call, Email)
 
-### Week 6-8: Advanced Features & Polish
+### Day 6-8: Advanced Features & Polish
 - ✅ Built admin dashboard with statistics
 - ✅ Implemented admin moderation (delete, resolve posts)
 - ✅ Added search and filter functionality
@@ -80,7 +80,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - ✅ Implemented skeleton loaders
 - ✅ Added Firestore security rules
 
-### Week 9-10: Testing & Documentation
+### Day 9-10: Testing & Documentation
 - ✅ Created unit tests for services
 - ✅ Created widget tests
 - ✅ Wrote comprehensive README
